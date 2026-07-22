@@ -26,28 +26,29 @@ export function CollectionsSection() {
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            
+
             {/* Dark Overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-transparent" />
-            
+
             {/* Content */}
             <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-between">
               <div>
-                <h3 className="text-sm text-textSecondary font-light uppercase tracking-widest mb-2">
+                {/* <h3 className="text-sm text-textSecondary font-light uppercase tracking-widest mb-2">
                   The Power of Mythology
-                </h3>
-                <h2 className="text-3xl md:text-4xl font-serif font-bold text-textPrimary mb-8">
+                </h3> */}
+                {/* <h2 className="text-3xl md:text-4xl font-serif font-bold text-textPrimary mb-8">
                   NEFERTUM<br />COLLECTION
-                </h2>
-                <p className="text-sm text-textSecondary font-light leading-relaxed max-w-sm mb-8">
+                </h2> */}
+                {/* <p className="text-sm text-textSecondary font-light leading-relaxed max-w-sm mb-8">
                   {collections[0].description}
-                </p>
+                </p> */}
               </div>
               <Link
-                href="/collection/nefertum"
-                className="inline-block bg-gold text-background px-6 py-2 text-xs font-light uppercase tracking-wider hover:bg-goldHover transition-colors duration-300 w-fit"
+                href="/collection"
+                className="inline-flex items-center gap-4 border border-gold text-gold px-8 py-3 text-xs font-light uppercase tracking-[0.25em] hover:bg-gold hover:text-background transition-colors duration-300"
               >
-                Explore
+                EXPLORE COLLECTION
+                <span className="text-base leading-none">›</span>
               </Link>
             </div>
           </motion.div>
@@ -67,28 +68,29 @@ export function CollectionsSection() {
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            
+
             {/* Dark Overlay */}
             <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/60 to-transparent" />
-            
+
             {/* Content */}
             <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-between">
               <div>
-                <h3 className="text-sm text-textSecondary font-light uppercase tracking-widest mb-2">
+                {/* <h3 className="text-sm text-textSecondary font-light uppercase tracking-widest mb-2">
                   The Power of Allure
-                </h3>
-                <h2 className="text-3xl md:text-4xl font-serif font-bold text-textPrimary mb-8">
+                </h3> */}
+                {/* <h2 className="text-3xl md:text-4xl font-serif font-bold text-textPrimary mb-8">
                   APHRODITE<br />COLLECTION
-                </h2>
-                <p className="text-sm text-textSecondary font-light leading-relaxed max-w-sm mb-8">
+                </h2> */}
+                {/* <p className="text-sm text-textSecondary font-light leading-relaxed max-w-sm mb-8">
                   {collections[1].description}
-                </p>
+                </p> */}
               </div>
               <Link
-                href="/collection/aphrodite"
-                className="inline-block bg-gold text-background px-6 py-2 text-xs font-light uppercase tracking-wider hover:bg-goldHover transition-colors duration-300 w-fit"
+                href="/collection"
+                className="inline-flex items-center gap-4 border border-gold text-gold px-8 py-3 text-xs font-light uppercase tracking-[0.25em] hover:bg-gold hover:text-background transition-colors duration-300 "
               >
-                Explore
+                EXPLORE COLLECTION
+                <span className="text-base leading-none">›</span>
               </Link>
             </div>
           </motion.div>

@@ -1,55 +1,135 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { cartApi, couponsApi } from '@/lib/api';
 
 export interface CartItem {
   id: string;
+  variantId?: string;
   name: string;
   price: number;
   quantity: number;
   image: string;
   collection: string;
   savedForLater?: boolean;
+  variant?: any;
 }
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (item: CartItem) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  addItem: (item: Partial<CartItem> & { id: string; name?: string; price?: number; quantity?: number; variantId?: string }) => Promise<void> | void;
+  removeItem: (id: string) => Promise<void> | void;
+  updateQuantity: (id: string, quantity: number) => Promise<void> | void;
   saveForLater: (id: string) => void;
   moveFromLater: (id: string) => void;
-  clearCart: () => void;
+  clearCart: () => Promise<void> | void;
   savedItems: CartItem[];
-  applyCoupon: (code: string) => void;
+  applyCoupon: (code: string) => Promise<void> | void;
   removeCoupon: () => void;
   coupon: { code: string; discount: number } | null;
   cartTotal: number;
   cartCount: number;
+  isLoading: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const normalizeCartItem = (item: any): CartItem => {
+  const variant = item.variant;
+  const product = variant?.product;
+  return {
+    id: item.id || item.variantId,
+    variantId: item.variantId || item.id,
+    name: product?.name || item.name || 'Luxury Fragrance',
+    price: Number(variant?.price ?? item.price ?? 6999),
+    quantity: Number(item.quantity ?? 1),
+    image: item.image || '/images/products/nefertum-detail.jpg',
+    collection: product?.collection || item.collection || 'nefertum',
+    savedForLater: item.savedForLater || false,
+    variant: variant || item.variant,
+  };
+};
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [savedItems, setSavedItems] = useState<CartItem[]>([]);
   const [coupon, setCoupon] = useState<{ code: string; discount: number } | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Load from localStorage on mount
+  // Load from backend or localStorage on mount/auth change
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    const savedLater = localStorage.getItem('savedForLater');
-    const savedCoupon = localStorage.getItem('coupon');
+    if (authLoading) return;
 
-    if (savedCart) setItems(JSON.parse(savedCart));
-    if (savedLater) setSavedItems(JSON.parse(savedLater));
-    if (savedCoupon) setCoupon(JSON.parse(savedCoupon));
-  }, []);
+    const initCart = async () => {
+      setIsLoading(true);
+      const savedCartStr = localStorage.getItem('cart');
+      const savedLaterStr = localStorage.getItem('savedForLater');
+      const savedCouponStr = localStorage.getItem('coupon');
 
-  // Persist to localStorage
+      if (savedLaterStr) {
+        try { setSavedItems(JSON.parse(savedLaterStr)); } catch (e) {}
+      }
+      if (savedCouponStr) {
+        try { setCoupon(JSON.parse(savedCouponStr)); } catch (e) {}
+      }
+
+      if (isAuthenticated) {
+        // Sync any local guest items to backend on login
+        if (savedCartStr) {
+          try {
+            const guestItems: CartItem[] = JSON.parse(savedCartStr);
+            if (Array.isArray(guestItems) && guestItems.length > 0) {
+              for (const gItem of guestItems) {
+                const vId = gItem.variantId || gItem.id;
+                if (vId) {
+                  try {
+                    await cartApi.addToCart(vId, gItem.quantity || 1);
+                  } catch (err) {
+                    console.error('Failed to sync guest item:', err);
+                  }
+                }
+              }
+            }
+          } catch (e) {}
+          localStorage.removeItem('cart');
+        }
+
+        // Fetch user's cart from backend
+        try {
+          const res = await cartApi.getCart();
+          if (res.success && res.cart && Array.isArray(res.cart.items)) {
+            setItems(res.cart.items.map(normalizeCartItem));
+          } else {
+            setItems([]);
+          }
+        } catch (err) {
+          console.error('Error fetching backend cart:', err);
+        }
+      } else {
+        // Guest fallback: load from localStorage
+        if (savedCartStr) {
+          try {
+            const guestItems = JSON.parse(savedCartStr);
+            if (Array.isArray(guestItems)) {
+              setItems(guestItems.map(normalizeCartItem));
+            }
+          } catch (e) {}
+        }
+      }
+      setIsLoading(false);
+    };
+
+    initCart();
+  }, [isAuthenticated, authLoading]);
+
+  // Persist guest cart to localStorage
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(items));
-  }, [items]);
+    if (!authLoading && !isAuthenticated && !isLoading) {
+      localStorage.setItem('cart', JSON.stringify(items));
+    }
+  }, [items, isAuthenticated, authLoading, isLoading]);
 
   useEffect(() => {
     localStorage.setItem('savedForLater', JSON.stringify(savedItems));
@@ -57,32 +137,74 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (coupon) localStorage.setItem('coupon', JSON.stringify(coupon));
+    else localStorage.removeItem('coupon');
   }, [coupon]);
 
-  const addItem = (item: CartItem) => {
-    setItems(prev => {
-      const existing = prev.find(i => i.id === item.id);
-      if (existing) {
-        return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i);
+  const addItem = async (item: Partial<CartItem> & { id: string; name?: string; price?: number; quantity?: number; variantId?: string }) => {
+    const qty = item.quantity || 1;
+    const vId = item.variantId || item.id;
+
+    if (isAuthenticated && vId) {
+      try {
+        const res = await cartApi.addToCart(vId, qty);
+        if (res.success && res.cart && Array.isArray(res.cart.items)) {
+          setItems(res.cart.items.map(normalizeCartItem));
+          return;
+        }
+      } catch (err) {
+        console.error('Error adding item to backend cart:', err);
       }
-      return [...prev, item];
+    }
+
+    // Fallback or guest update
+    setItems(prev => {
+      const existing = prev.find(i => (i.variantId || i.id) === vId || i.id === item.id);
+      if (existing) {
+        return prev.map(i => ((i.variantId || i.id) === vId || i.id === item.id) ? { ...i, quantity: i.quantity + qty } : i);
+      }
+      return [...prev, normalizeCartItem({ ...item, quantity: qty, variantId: vId })];
     });
   };
 
-  const removeItem = (id: string) => {
-    setItems(prev => prev.filter(i => i.id !== id));
+  const removeItem = async (id: string) => {
+    if (isAuthenticated) {
+      const targetItem = items.find(i => i.id === id || i.variantId === id);
+      const backendId = targetItem?.id || id;
+      try {
+        const res = await cartApi.removeFromCart(backendId);
+        if (res.success && res.cart && Array.isArray(res.cart.items)) {
+          setItems(res.cart.items.map(normalizeCartItem));
+          return;
+        }
+      } catch (err) {
+        console.error('Error removing item from backend cart:', err);
+      }
+    }
+    setItems(prev => prev.filter(i => i.id !== id && i.variantId !== id));
   };
 
-  const updateQuantity = (id: string, quantity: number) => {
+  const updateQuantity = async (id: string, quantity: number) => {
     if (quantity <= 0) {
-      removeItem(id);
-    } else {
-      setItems(prev => prev.map(i => i.id === id ? { ...i, quantity } : i));
+      return removeItem(id);
     }
+    if (isAuthenticated) {
+      const targetItem = items.find(i => i.id === id || i.variantId === id);
+      const backendId = targetItem?.id || id;
+      try {
+        const res = await cartApi.updateQty(backendId, quantity);
+        if (res.success && res.cart && Array.isArray(res.cart.items)) {
+          setItems(res.cart.items.map(normalizeCartItem));
+          return;
+        }
+      } catch (err) {
+        console.error('Error updating quantity in backend cart:', err);
+      }
+    }
+    setItems(prev => prev.map(i => (i.id === id || i.variantId === id) ? { ...i, quantity } : i));
   };
 
   const saveForLater = (id: string) => {
-    const item = items.find(i => i.id === id);
+    const item = items.find(i => i.id === id || i.variantId === id);
     if (item) {
       setSavedItems(prev => [...prev, item]);
       removeItem(id);
@@ -97,22 +219,36 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const clearCart = () => {
+  const clearCart = async () => {
+    if (isAuthenticated && items.length > 0) {
+      try {
+        await cartApi.clearCart();
+      } catch (err) {
+        console.error('Error clearing backend cart:', err);
+      }
+    }
     setItems([]);
     setCoupon(null);
+    if (!isAuthenticated) {
+      localStorage.removeItem('cart');
+    }
   };
 
-  const applyCoupon = (code: string) => {
-    // Example coupon codes
-    const coupons: Record<string, number> = {
-      'LUXURY10': 10,
-      'NEFERTUM15': 15,
-      'APHRODITE20': 20,
-      'PREMIUM25': 25,
-    };
-
-    if (coupons[code.toUpperCase()]) {
-      setCoupon({ code: code.toUpperCase(), discount: coupons[code.toUpperCase()] });
+  const applyCoupon = async (code: string) => {
+    if (!code || !code.trim()) return;
+    try {
+      const currentSubtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+      const res = await couponsApi.validateCoupon(code.trim(), currentSubtotal);
+      if (res.success && res.coupon) {
+        setCoupon({
+          code: res.coupon.code,
+          discount: res.coupon.discountValue,
+        });
+      } else {
+        console.warn('Coupon validation failed:', res.message);
+      }
+    } catch (err) {
+      console.error('Failed to validate coupon with server:', err);
     }
   };
 
@@ -140,6 +276,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         coupon,
         cartTotal: discountedTotal,
         cartCount,
+        isLoading,
       }}
     >
       {children}

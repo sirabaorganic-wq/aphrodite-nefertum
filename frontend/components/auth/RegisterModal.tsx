@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Lock, User, Eye, EyeOff, ArrowRight, Check } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface RegisterModalProps {
 }
 
 export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModalProps) {
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -66,9 +68,22 @@ export function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModa
     }
 
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsLoading(false);
-    onClose();
+    try {
+      const nameParts = formData.name.trim().split(/\s+/);
+      const firstName = nameParts[0] || 'User';
+      const lastName = nameParts.slice(1).join(' ') || 'Customer';
+      await register({
+        email: formData.email,
+        password: formData.password,
+        firstName,
+        lastName,
+      });
+      setIsLoading(false);
+      onClose();
+    } catch (err: any) {
+      setIsLoading(false);
+      setError(err.message || 'Registration failed. Please try again.');
+    }
   };
 
   const getStrengthColor = () => {

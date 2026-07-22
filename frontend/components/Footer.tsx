@@ -10,7 +10,7 @@ export function Footer() {
     <footer className="bg-[#0a0905] border-t border-border mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Footer Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           {/* About */}
           <div className="col-span-2 md:col-span-1">
             <h3 className="text-gold font-serif font-bold text-sm mb-4">
@@ -93,6 +93,60 @@ export function Footer() {
               <li className="text-xs text-textSecondary">+91 98765 43210</li>
             </ul>
           </div>
+
+          {/* Legal */}
+          <div>
+            <h4 className="text-textPrimary font-light text-xs font-serif mb-4 uppercase tracking-wide">
+              Legal
+            </h4>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/privacy-policy" className="text-xs text-textSecondary hover:text-gold transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms-and-conditions" className="text-xs text-textSecondary hover:text-gold transition-colors">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link href="/refund-policy" className="text-xs text-textSecondary hover:text-gold transition-colors">
+                  Refund & Cancellation
+                </Link>
+              </li>
+              <li>
+                <Link href="/shipping-policy" className="text-xs text-textSecondary hover:text-gold transition-colors">
+                  Shipping Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/cookie-policy" className="text-xs text-textSecondary hover:text-gold transition-colors">
+                  Cookie Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/authenticity-policy" className="text-xs text-textSecondary hover:text-gold transition-colors">
+                  Authenticity Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/grievance-policy" className="text-xs text-textSecondary hover:text-gold transition-colors">
+                  Grievance Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/intellectual-property" className="text-xs text-textSecondary hover:text-gold transition-colors">
+                  Intellectual Property
+                </Link>
+              </li>
+              <li>
+                <Link href="/product-disclaimer" className="text-xs text-textSecondary hover:text-gold transition-colors">
+                  Product Disclaimer
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* Divider */}
@@ -132,11 +186,11 @@ export function Footer() {
 
           {/* Right Links */}
           <div className="flex items-center space-x-6 text-xs mt-4 md:mt-0">
-            <Link href="/privacy" className="text-textSecondary hover:text-gold transition-colors">
+            <Link href="/privacy-policy" className="text-textSecondary hover:text-gold transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="text-textSecondary hover:text-gold transition-colors">
-              Terms of Use
+            <Link href="/terms-and-conditions" className="text-textSecondary hover:text-gold transition-colors">
+              Terms & Conditions
             </Link>
           </div>
         </div>

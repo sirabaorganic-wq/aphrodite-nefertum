@@ -1,12 +1,29 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import Link from 'next/link';
 import { Heart, Package, Settings, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function AccountPage() {
+  const router = useRouter();
+  const { user, isLoading, logout } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.replace('/');
+    }
+  }, [user, isLoading, router]);
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/');
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -19,6 +36,21 @@ export default function AccountPage() {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
   };
+
+  if (isLoading) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-background flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-8 h-8 border-2 border-gold/20 border-t-gold rounded-full animate-spin" />
+            <p className="text-textSecondary text-sm">Loading profile...</p>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <main className="bg-background text-foreground">
@@ -60,7 +92,7 @@ export default function AccountPage() {
                   <p className="text-xs text-textSecondary font-light uppercase tracking-widest mb-2">
                     Welcome back
                   </p>
-                  <h2 className="text-2xl font-serif font-bold text-textPrimary">Kavya Sharma</h2>
+                  <h2 className="text-2xl font-serif font-bold text-textPrimary">{user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Valued Member' : 'Member'}</h2>
                 </div>
 
                 <div className="border-t border-border pt-6 space-y-4">
@@ -68,7 +100,7 @@ export default function AccountPage() {
                     <p className="text-xs text-textSecondary font-light uppercase tracking-widest mb-1">
                       Email
                     </p>
-                    <p className="text-sm text-textPrimary">kavya.sharma@example.com</p>
+                    <p className="text-sm text-textPrimary">{user?.email || 'N/A'}</p>
                   </div>
                   <div>
                     <p className="text-xs text-textSecondary font-light uppercase tracking-widest mb-1">
@@ -194,7 +226,10 @@ export default function AccountPage() {
             variants={itemVariants}
             className="mt-16 border-t border-border pt-16"
           >
-            <button className="flex items-center gap-2 text-gold font-light uppercase tracking-widest text-sm hover:text-goldHover transition-colors group">
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-gold font-light uppercase tracking-widest text-sm hover:text-goldHover transition-colors group"
+            >
               <LogOut className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               Sign Out
             </button>

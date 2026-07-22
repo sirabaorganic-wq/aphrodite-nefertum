@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from 'sonner'
 import './globals.css'
 import { CartProvider } from '@/lib/context/CartContext'
 import { WishlistProvider } from '@/lib/context/WishlistContext'
+import { AuthProvider } from '@/lib/context/AuthContext'
 
 const geist = Geist({ subsets: ["latin"], variable: '--font-sans' });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: '--font-mono' });
@@ -47,13 +49,27 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable} ${geistMono.variable} ${playfairDisplay.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased bg-background text-foreground">
-        <CartProvider>
-          <WishlistProvider>
-            {children}
-            {process.env.NODE_ENV === 'production' && <Analytics />}
-          </WishlistProvider>
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              {children}
+              <Toaster
+                position="top-center"
+                toastOptions={{
+                  style: {
+                    background: '#1a1815',
+                    color: '#F5F0E8',
+                    border: '1px solid #2a2520',
+                    fontFamily: 'var(--font-sans)',
+                  },
+                }}
+              />
+              {process.env.NODE_ENV === 'production' && <Analytics />}
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   )
 }
+

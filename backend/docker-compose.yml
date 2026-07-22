@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/aphrodite_nefertum?schema=public
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=super_secret_jwt_access_key_12345!
+      - JWT_REFRESH_SECRET=super_secret_jwt_refresh_key_54321!
+      - JWT_ACCESS_EXPIRATION=15m
+      - JWT_REFRESH_EXPIRATION=7d
+      - RAZORPAY_KEY_ID=rzp_test_mockKeyId123
+      - RAZORPAY_KEY_SECRET=mockKeySecret45678
+      - SHIPROCKET_EMAIL=admin@sirabaorganic.com
+      - SHIPROCKET_PASSWORD=mockShiprocketPassword123
+      - CLOUDINARY_CLOUD_NAME=mock_cloud
+      - CLOUDINARY_API_KEY=1234567890
+      - CLOUDINARY_API_SECRET=mock_cloudinary_secret
+      - SMTP_HOST=smtp.mailtrap.io
+      - SMTP_PORT=2525
+      - SMTP_USER=mock_smtp_user
+      - SMTP_PASS=mock_smtp_pass
+      - SMTP_FROM=Aphrodite Nefertum <noreply@aphroditenefertum.com>
+      - RAZORPAY_WEBHOOK_SECRET=mock_razorpay_webhook_secret_key
+      - SHIPROCKET_WEBHOOK_SECRET=mock_shiprocket_webhook_secret_key
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  db:
+    image: postgres:15-alpine
+    container_name: aphrodite_nefertum_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=aphrodite_nefertum
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: aphrodite_nefertum_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    restart: always
+
+volumes:
+  pgdata:
+  redisdata:

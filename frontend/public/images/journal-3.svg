@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0a0805"/>
+      <stop offset="100%" style="stop-color:#1a1510"/>
+    </linearGradient>
+    <linearGradient id="gold3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8B7355"/>
+      <stop offset="50%" style="stop-color:#C6A972"/>
+      <stop offset="100%" style="stop-color:#8B7355"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg3)"/>
+  <!-- Layered wave motif -->
+  <g opacity="0.12">
+    <path d="M0,350 Q200,280 400,350 Q600,420 800,350 L800,600 L0,600 Z" fill="#C6A972"/>
+    <path d="M0,380 Q200,310 400,380 Q600,450 800,380 L800,600 L0,600 Z" fill="#8B7355"/>
+    <path d="M0,410 Q200,340 400,410 Q600,480 800,410 L800,600 L0,600 Z" fill="#6B5F4A"/>
+  </g>
+  <!-- Title -->
+  <text x="400" y="280" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#C6A972" letter-spacing="4">THE ART OF LAYERING</text>
+  <text x="400" y="310" text-anchor="middle" font-family="Georgia, serif" font-size="12" fill="#A89968" letter-spacing="2">IN TROPICAL CLIMATES</text>
+  <!-- Decorative line -->
+  <line x1="320" y1="340" x2="480" y2="340" stroke="url(#gold3)" stroke-width="1" opacity="0.4"/>
+</svg>

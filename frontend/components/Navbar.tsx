@@ -9,10 +9,14 @@ import { LoginModal } from './auth/LoginModal';
 import { RegisterModal } from './auth/RegisterModal';
 import { ForgotPasswordModal } from './auth/ForgotPasswordModal';
 import { AdvancedSearch } from './AdvancedSearch';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
 
 type AuthModal = 'none' | 'login' | 'register' | 'forgot-password';
 
 export function Navbar() {
+  const { user, isAuthenticated } = useAuth();
+  const { cartCount } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const [authModal, setAuthModal] = useState<AuthModal>('none');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -21,67 +25,71 @@ export function Navbar() {
     { label: 'NEFERTUM COLLECTION', href: '/collection' },
     { label: 'APHRODITE', href: '/collection' },
     { label: 'CLIMATE COLLECTION', href: '/collection' },
+    { label: 'DISCOVERY SET', href: '/collection' },
     { label: 'JOURNAL', href: '/journal' },
-    { label: 'PHILOSOPHY', href: '/philosophy' },
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center group">
-            <motion.div
-              whileHover={{ scale: 1.10 }}
-              className="relative h-10 w-10"
-            >
-              <Image
-                src="/images/logo.png"
-                alt="APHRODITE-NEFERTUM Logo"
-                width={100}
-                height={100}
-                className="object-contain"
-                priority
-              />
-            </motion.div>
-          </Link>
-
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-xs font-light text-textPrimary hover:text-gold transition-colors duration-300 px-3 py-2"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* Right Icons */}
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setIsSearchOpen(true)}
-              className="p-2 hover:text-gold transition-colors"
-            >
-              <Search size={18} />
-            </button>
-            <button
-              onClick={() => setAuthModal('login')}
-              className="p-2 hover:text-gold transition-colors hidden sm:block"
-            >
-              <User size={18} />
-            </button>
-            <Link
-              href="/cart"
-              className="p-2 hover:text-gold transition-colors relative"
-            >
-              <ShoppingBag size={18} />
-              <span className="absolute -top-1 -right-1 bg-gold text-background text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                0
+    <>
+      <nav className="bg-[#0a0908] border-b border-border sticky top-0 z-50 backdrop-blur-md bg-opacity-80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 items-center">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-2">
+              <span className="text-xl md:text-2xl font-serif tracking-widest text-gold font-bold">
+                APHRODITE NEFERTUM
               </span>
             </Link>
+
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center space-x-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-xs font-light text-textPrimary hover:text-gold transition-colors duration-300 px-3 py-2"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Right Icons */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2 hover:text-gold transition-colors"
+              >
+                <Search size={18} />
+              </button>
+              {isAuthenticated ? (
+                <Link
+                  href={user?.role === 'ADMIN' ? '/admin' : '/account'}
+                  className="p-2 text-gold hover:text-gold/80 transition-colors hidden sm:block"
+                  title={`Logged in as ${user?.firstName || user?.email}`}
+                >
+                  <User size={18} />
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setAuthModal('login')}
+                  className="p-2 hover:text-gold transition-colors hidden sm:block"
+                  title="Sign In"
+                >
+                  <User size={18} />
+                </button>
+              )}
+              <Link
+                href="/cart"
+                className="p-2 hover:text-gold transition-colors relative"
+              >
+                <ShoppingBag size={18} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-gold text-background text-xs rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center font-bold">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
 
             {/* Mobile Menu Toggle */}
             <button
@@ -113,28 +121,29 @@ export function Navbar() {
             ))}
           </motion.div>
         )}
-
-        {/* Advanced Search */}
-        <AdvancedSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-
-        {/* Auth Modals */}
-        <LoginModal
-          isOpen={authModal === 'login'}
-          onClose={() => setAuthModal('none')}
-          onSwitchToRegister={() => setAuthModal('register')}
-          onSwitchToForgotPassword={() => setAuthModal('forgot-password')}
-        />
-        <RegisterModal
-          isOpen={authModal === 'register'}
-          onClose={() => setAuthModal('none')}
-          onSwitchToLogin={() => setAuthModal('login')}
-        />
-        <ForgotPasswordModal
-          isOpen={authModal === 'forgot-password'}
-          onClose={() => setAuthModal('none')}
-          onSwitchToLogin={() => setAuthModal('login')}
-        />
       </div>
     </nav>
+
+    {/* Advanced Search */}
+    <AdvancedSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
+    {/* Auth Modals */}
+    <LoginModal
+      isOpen={authModal === 'login'}
+      onClose={() => setAuthModal('none')}
+      onSwitchToRegister={() => setAuthModal('register')}
+      onSwitchToForgotPassword={() => setAuthModal('forgot-password')}
+    />
+    <RegisterModal
+      isOpen={authModal === 'register'}
+      onClose={() => setAuthModal('none')}
+      onSwitchToLogin={() => setAuthModal('login')}
+    />
+    <ForgotPasswordModal
+      isOpen={authModal === 'forgot-password'}
+      onClose={() => setAuthModal('none')}
+      onSwitchToLogin={() => setAuthModal('login')}
+    />
+    </>
   );
 }

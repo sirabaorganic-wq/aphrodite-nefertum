@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <linearGradient id="bga" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0d0a"/>
+      <stop offset="100%" style="stop-color:#1a1510"/>
+    </linearGradient>
+    <radialGradient id="glowa" cx="50%" cy="50%" r="40%">
+      <stop offset="0%" style="stop-color:#D4B896;stop-opacity:0.12"/>
+      <stop offset="100%" style="stop-color:#0f0d0a;stop-opacity:0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#bga)"/>
+  <rect width="1200" height="600" fill="url(#glowa)"/>
+  <!-- Shell / Venus motif -->
+  <g transform="translate(600,250)" opacity="0.18">
+    <path d="M-80,0 Q-60,-60 0,-80 Q60,-60 80,0 Q60,60 0,30 Q-60,60 -80,0 Z" fill="#C6A972" stroke="#D4B896" stroke-width="1"/>
+    <path d="M0,-80 L0,30" stroke="#D4B896" stroke-width="0.5" opacity="0.5"/>
+    <path d="M-80,0 L80,0" stroke="#D4B896" stroke-width="0.5" opacity="0.5"/>
+    <path d="M-55,-55 L55,55" stroke="#D4B896" stroke-width="0.5" opacity="0.3"/>
+    <path d="M55,-55 L-55,55" stroke="#D4B896" stroke-width="0.5" opacity="0.3"/>
+  </g>
+  <text x="600" y="380" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#C6A972" letter-spacing="8">APHRODITE</text>
+  <text x="600" y="415" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#A89968" letter-spacing="4">COLLECTION</text>
+  <line x1="500" y1="445" x2="700" y2="445" stroke="#C6A972" stroke-width="1" opacity="0.3"/>
+</svg>
