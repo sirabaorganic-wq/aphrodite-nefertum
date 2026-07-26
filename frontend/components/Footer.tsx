@@ -137,7 +137,7 @@ export function Footer() {
                   aphroditenefertum@gmail.com
                 </a>
               </li>
-              <li className="text-xs text-textSecondary">+91 98765 43210</li>
+              <li className="text-xs text-textSecondary">+91  88825 55990</li>
             </ul>
           </div>
 
@@ -268,11 +268,10 @@ export function Footer() {
                     >
                       <Star
                         size={22}
-                        className={`transition-colors duration-200 ${
-                          star <= (hoverRating || reviewRating)
+                        className={`transition-colors duration-200 ${star <= (hoverRating || reviewRating)
                             ? 'text-gold fill-gold'
                             : 'text-gold/25'
-                        }`}
+                          }`}
                       />
                     </button>
                   ))}
