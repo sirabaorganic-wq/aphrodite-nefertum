@@ -174,7 +174,7 @@ export function LoginModal({ isOpen, onClose, onSwitchToRegister, onSwitchToForg
                   whileTap={{ scale: 0.98 }}
                   disabled={isLoading}
                   type="submit"
-                  className="w-full bg-gradient-to-r from-gold to-gold/80 text-background font-light uppercase tracking-wider py-3 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 group"
+                  className="w-full bg-gradient-to-r from-gold to-gold/80 text-white uppercase tracking-wider py-3 rounded-lg font-semibold text-sm transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 group hover:shadow-[0_0_20px_rgba(198,169,114,0.3)]"
                 >
                   {isLoading ? (
                     <div className="w-5 h-5 border-2 border-background/20 border-t-background rounded-full animate-spin" />

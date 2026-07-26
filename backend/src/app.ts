@@ -27,6 +27,7 @@ import shiprocketRoutes from './routes/shiprocketRoutes.js';
 import shippingRoutes from './routes/shippingRoutes.js';
 import cmsRoutes from './routes/cmsRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -125,6 +126,7 @@ app.use(`${API_PREFIX}/logistics`, shiprocketRoutes);
 app.use(`${API_PREFIX}/shipping`,  shippingRoutes);
 app.use(`${API_PREFIX}/cms`,       cmsRoutes);
 app.use(`${API_PREFIX}/admin`,     adminRoutes);
+app.use(`${API_PREFIX}/reviews`,   reviewRoutes);
 
 // ─── 404 Handler ──────────────────────────────────────────────────────────────
 app.use((req, res) => {

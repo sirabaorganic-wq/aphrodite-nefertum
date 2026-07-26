@@ -1,6 +1,8 @@
 # Stage 1: Build TypeScript and generate Prisma artifacts
 FROM node:20-alpine AS builder
 
+RUN apk add --no-cache openssl
+
 WORKDIR /usr/src/app
 
 COPY package*.json ./
@@ -17,6 +19,8 @@ RUN npm prune --production
 
 # Stage 2: Minimal runtime image
 FROM node:20-alpine AS runner
+
+RUN apk add --no-cache openssl
 
 WORKDIR /usr/src/app
 

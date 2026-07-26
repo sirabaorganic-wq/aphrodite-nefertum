@@ -173,6 +173,35 @@ ${options.html}
       html,
     });
   }
+  public async sendReviewNotification(data: { name: string; email: string; rating: number; message: string }) {
+    const stars = '★'.repeat(data.rating) + '☆'.repeat(5 - data.rating);
+    const html = `
+      <div style="background-color: #050505; color: #F5E7C8; padding: 40px; font-family: sans-serif; border: 1px solid #2A2520; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #C6A972; font-family: serif; font-size: 28px; text-align: center; margin-bottom: 25px; letter-spacing: 2px;">NEW CUSTOMER REVIEW</h1>
+        
+        <div style="background-color: #100f0d; border: 1px solid #2A2520; padding: 20px; margin-bottom: 20px;">
+          <p style="margin: 0 0 8px 0; font-size: 14px; color: #6B5F4A;">From:</p>
+          <p style="margin: 0 0 5px 0; font-size: 16px; color: #F5E7C8; font-weight: bold;">${data.name}</p>
+          <p style="margin: 0 0 15px 0; font-size: 14px; color: #A89968;">${data.email}</p>
+          
+          <p style="margin: 0 0 8px 0; font-size: 14px; color: #6B5F4A;">Rating:</p>
+          <p style="margin: 0 0 15px 0; font-size: 24px; color: #C6A972;">${stars}</p>
+          
+          <p style="margin: 0 0 8px 0; font-size: 14px; color: #6B5F4A;">Review:</p>
+          <p style="margin: 0; font-size: 15px; color: #F5E7C8; line-height: 1.6; white-space: pre-wrap;">${data.message}</p>
+        </div>
+        
+        <p style="font-size: 12px; text-align: center; color: #6B5F4A; margin: 0;">
+          Submitted on ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+        </p>
+      </div>
+    `;
+    await this.sendMail({
+      to: 'aphroditenefertum@gmail.com',
+      subject: `⭐ New Review (${data.rating}/5) from ${data.name} - APHRODITE NEFERTUM`,
+      html,
+    });
+  }
 }
 
 export const emailService = new EmailService();

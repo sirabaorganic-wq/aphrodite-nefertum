@@ -45,7 +45,7 @@ export function Navbar() {
             <div className="hidden md:flex items-center space-x-1">
               {navItems.map((item) => (
                 <Link
-                  key={item.href}
+                  key={item.label}
                   href={item.href}
                   className="text-xs font-light text-textPrimary hover:text-gold transition-colors duration-300 px-3 py-2"
                 >
@@ -111,7 +111,7 @@ export function Navbar() {
           >
             {navItems.map((item) => (
               <Link
-                key={item.href}
+                key={item.label}
                 href={item.href}
                 className="block text-sm text-textPrimary hover:text-gold transition-colors px-4 py-2"
                 onClick={() => setIsOpen(false)}
@@ -123,6 +123,15 @@ export function Navbar() {
         )}
       </div>
     </nav>
+
+    {/* Trial Notice Banner */}
+    <div className="bg-gradient-to-r from-red-900/40 via-red-800/30 to-red-900/40 border-b border-red-500/20 overflow-hidden">
+      <div className="py-1.5 flex items-center justify-center">
+        <p className="text-xs font-light text-red-300 tracking-widest uppercase animate-pulse">
+          ⚠ THE SITE IS IN TRIAL, PLEASE DO NOT PURCHASE. ⚠
+        </p>
+      </div>
+    </div>
 
     {/* Advanced Search */}
     <AdvancedSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
